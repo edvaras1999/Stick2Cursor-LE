@@ -46,7 +46,7 @@ jobs:
             <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration"><ConfigurationType>StaticLibrary</ConfigurationType><UseDebugLibraries>false</UseDebugLibraries><PlatformToolset>v143</PlatformToolset><CharacterSet>MultiByte</CharacterSet></PropertyGroup>
             <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
             <PropertyGroup><OutDir>$(MSBuildProjectDirectory)\Release\</OutDir><IntDir>$(MSBuildProjectDirectory)\Release\obj\</IntDir><TargetName>common_vc9</TargetName></PropertyGroup>
-            <ItemDefinitionGroup><ClCompile><WarningLevel>Level3</WarningLevel><Optimization>MaxSpeed</Optimization><PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions><RuntimeLibrary>MultiThreaded</RuntimeLibrary><LanguageStandard>stdcpp14</LanguageStandard><AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories></ClCompile></ItemDefinitionGroup>
+            <ItemDefinitionGroup><ClCompile><WarningLevel>Level3</WarningLevel><Optimization>MaxSpeed</Optimization><PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions><RuntimeLibrary>MultiThreaded</RuntimeLibrary><LanguageStandard>stdcpp14</LanguageStandard><AdditionalIncludeDirectories>$(MSBuildProjectDirectory);$(MSBuildProjectDirectory)\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><ForcedIncludeFiles>IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles><DisableSpecificWarnings>4996;4244;4267;%(DisableSpecificWarnings)</DisableSpecificWarnings></ClCompile></ItemDefinitionGroup>
             <ItemGroup>
           @@ITEMS@@
             </ItemGroup>
@@ -60,6 +60,14 @@ jobs:
             Add-Content -Path $prefix -Value @('', '// STICK2CURSOR_STD_COMPAT: standard headers expected by the legacy SKSE source', '#ifdef __cplusplus', '#include <string>', '#include <vector>', '#include <map>', '#include <set>', '#include <list>', '#include <algorithm>', '#include <memory>', '#include <cstdint>', '#include <cstddef>', '#include <cstring>', '#include <cstdio>', '#include <cstdlib>', '#include <cmath>', '#endif')
           }
           msbuild $project /m /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v143
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host 'Full common build failed; retrying the SKSE core file set.'
+            $coreNames = @('IDebugLog.cpp','IErrors.cpp','IFileStream.cpp','IDataStream.cpp','ICriticalSection.cpp','IDirectoryIterator.cpp','IBufferStream.cpp','IThread.cpp','ITimer.cpp')
+            $coreItems = ($coreNames | Where-Object { Test-Path (Join-Path $commonDir $_) } | ForEach-Object { '    <ClCompile Include="' + $_ + '" />' }) -join "`r`n"
+            $coreXml = $xmlTemplate.Replace('@@ITEMS@@', $coreItems)
+            Set-Content -Path $project -Value $coreXml -Encoding utf8
+            msbuild $project /m /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v143
+          }
           if ($LASTEXITCODE -ne 0) { throw 'common_vc9 build failed.' }
       - name: Build plugin
         shell: pwsh

@@ -10,9 +10,8 @@
   <PropertyGroup><OutDir>$(ProjectDir)..\out\</OutDir><IntDir>$(ProjectDir)..\build\</IntDir><TargetName>Stick2CursorLE</TargetName></PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile><WarningLevel>Level3</WarningLevel><Optimization>MaxSpeed</Optimization><FunctionLevelLinking>true</FunctionLevelLinking><IntrinsicFunctions>true</IntrinsicFunctions><SDLCheck>true</SDLCheck><PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions><RuntimeLibrary>MultiThreaded</RuntimeLibrary><LanguageStandard>stdcpp14</LanguageStandard><AdditionalIncludeDirectories>$(SKSE_ROOT)\src;$(SKSE_ROOT)\src\common;$(SKSE_ROOT)\src\skse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><ForcedIncludeFiles>IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles></ClCompile>
-    <Link><SubSystem>Windows</SubSystem><GenerateDebugInformation>false</GenerateDebugInformation><ModuleDefinitionFile>$(ProjectDir)Stick2CursorLE.def</ModuleDefinitionFile><AdditionalLibraryDirectories>$(SKSE_ROOT)\src\common\Release;$(SKSE_ROOT)\src\common\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories><AdditionalDependencies>common_vc9.lib;Xinput9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies></Link>
+    <Link><SubSystem>Windows</SubSystem><GenerateDebugInformation>false</GenerateDebugInformation><AdditionalLibraryDirectories>$(SKSE_ROOT)\src\common\Release;$(SKSE_ROOT)\src\common\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories><AdditionalDependencies>common_vc9.lib;Xinput9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies></Link>
   </ItemDefinitionGroup>
   <ItemGroup><ClCompile Include="Stick2CursorLE.cpp" /></ItemGroup>
-  <ItemGroup><None Include="Stick2CursorLE.def" /></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

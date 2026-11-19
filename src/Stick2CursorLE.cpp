@@ -88,6 +88,6 @@ InputSink g_sink;
 void Message(SKSEMessagingInterface::Message* m){if(!m)return;if(m->type==SKSEMessagingInterface::kMessage_DataLoaded)ReadConfig();if(m->type==SKSEMessagingInterface::kMessage_InputLoaded){auto* d=*g_inputEventDispatcher;if(d)d->AddEventSink(&g_sink);StartPolling();}}
 }
 extern "C" {
-bool SKSEPlugin_Query(const SKSEInterface* skse,PluginInfo* info){info->infoVersion=PluginInfo::kInfoVersion;info->name="Stick2CursorLE";info->version=1;return skse&&skse->isEditor==0&&skse->runtimeVersion==RUNTIME_VERSION_1_9_32_0&&skse->skseVersion>=PACKED_SKSE_VERSION;}
-bool SKSEPlugin_Load(const SKSEInterface* skse){g_handle=skse->GetPluginHandle();g_messaging=(SKSEMessagingInterface*)skse->QueryInterface(kInterface_Messaging);auto* pap=(SKSEPapyrusInterface*)skse->QueryInterface(kInterface_Papyrus);if(!g_messaging||!pap)return false;pap->Register(RegisterPapyrus);g_messaging->RegisterListener(g_handle,"SKSE",Message);return true;}
+__declspec(dllexport) bool SKSEPlugin_Query(const SKSEInterface* skse,PluginInfo* info){info->infoVersion=PluginInfo::kInfoVersion;info->name="Stick2CursorLE";info->version=1;return skse&&skse->isEditor==0&&skse->runtimeVersion==RUNTIME_VERSION_1_9_32_0&&skse->skseVersion>=PACKED_SKSE_VERSION;}
+__declspec(dllexport) bool SKSEPlugin_Load(const SKSEInterface* skse){g_handle=skse->GetPluginHandle();g_messaging=(SKSEMessagingInterface*)skse->QueryInterface(kInterface_Messaging);auto* pap=(SKSEPapyrusInterface*)skse->QueryInterface(kInterface_Papyrus);if(!g_messaging||!pap)return false;pap->Register(RegisterPapyrus);g_messaging->RegisterListener(g_handle,"SKSE",Message);return true;}
 }

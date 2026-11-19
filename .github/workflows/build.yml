@@ -37,7 +37,7 @@ jobs:
           $files = Get-ChildItem $commonDir -Filter '*.cpp' | Sort-Object Name
           if (-not $files) { throw 'No SKSE common .cpp files found.' }
           $items = ($files | ForEach-Object { '    <ClCompile Include="' + $_.Name + '" />' }) -join "`r`n"
-          $xml = @"
+          $xmlTemplate = @'
           <?xml version="1.0" encoding="utf-8"?>
           <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
             <ItemGroup Label="ProjectConfigurations"><ProjectConfiguration Include="Release|Win32"><Configuration>Release</Configuration><Platform>Win32</Platform></ProjectConfiguration></ItemGroup>
@@ -48,11 +48,12 @@ jobs:
             <PropertyGroup><OutDir>$(MSBuildProjectDirectory)\Release\</OutDir><IntDir>$(MSBuildProjectDirectory)\Release\obj\</IntDir><TargetName>common_vc9</TargetName></PropertyGroup>
             <ItemDefinitionGroup><ClCompile><WarningLevel>Level3</WarningLevel><Optimization>MaxSpeed</Optimization><PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions><RuntimeLibrary>MultiThreaded</RuntimeLibrary><LanguageStandard>stdcpp14</LanguageStandard><AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories></ClCompile></ItemDefinitionGroup>
             <ItemGroup>
-          $items
+          @@ITEMS@@
             </ItemGroup>
             <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
           </Project>
-          "@
+          '@
+          $xml = $xmlTemplate.Replace('@@ITEMS@@', $items)
           Set-Content -Path $project -Value $xml -Encoding utf8
           $prefix = Join-Path $commonDir 'IPrefix.h'
           if (-not (Select-String -Path $prefix -Pattern 'STICK2CURSOR_STD_COMPAT' -Quiet)) {

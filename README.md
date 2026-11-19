@@ -13,7 +13,7 @@ Gamepad cursor control for Skyrim Legendary Edition 1.9.32 and SKSE 1.7.3.
 
 ## Development status
 
-Project scaffold only. Input suppression and cursor injection must be verified against the LE 1.9.32 runtime before a test build is distributed. No runtime behaviour is claimed yet.
+First experimental source. Cursor motion uses relative mouse input rather than SetCursorPos so Skyrim's UI receives the motion instead of moving the desktop pointer. Verify Skyrim and KHAOS cursor behaviour in game before distributing a test build.
 
 ## Project layout
 

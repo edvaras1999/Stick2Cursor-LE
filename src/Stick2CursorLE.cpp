@@ -38,8 +38,10 @@ void ReadConfig(){
 void WriteInt(const char* key,LONG value){char b[24];_snprintf_s(b,sizeof(b),_TRUNCATE,"%ld",value);WritePrivateProfileStringA("Cursor",key,b,kIni);}
 void MoveCursor(float dx,float dy){
  if(dx==0&&dy==0)return;
- POINT p{};if(!GetCursorPos(&p))return;
- SetCursorPos(p.x+(int)std::lround(dx),p.y+(int)std::lround(dy));
+ // Inject relative mouse input so Skyrim's input/Scaleform path receives motion.
+ // Do not move the desktop pointer with SetCursorPos: KHAOS can draw its own cursor.
+ INPUT in{};in.type=INPUT_MOUSE;in.mi.dx=(LONG)std::lround(dx);in.mi.dy=(LONG)std::lround(dy);in.mi.dwFlags=MOUSEEVENTF_MOVE;
+ SendInput(1,&in,sizeof(in));
 }
 DWORD WINAPI PollGamepad(void*){
  XINPUT_STATE state{};DWORD last=GetTickCount();

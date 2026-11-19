@@ -16,6 +16,7 @@
     <ClCompile Include="Stick2CursorLE.cpp" />
     <ClCompile Include="$(SKSE_ROOT)\src\skse\skse\GameAPI.cpp" />
     <ClCompile Include="$(SKSE_ROOT)\src\skse\skse\GameInput.cpp" />
+    <ClCompile Include="$(SKSE_ROOT)\src\skse\skse\GameTypes.cpp" />
     <ClCompile Include="$(SKSE_ROOT)\src\skse\skse\PapyrusArgs.cpp" />
     <ClCompile Include="$(SKSE_ROOT)\src\skse\skse\PapyrusVM.cpp" />
   </ItemGroup>

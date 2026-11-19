@@ -1,0 +1,4 @@
+LIBRARY "Stick2CursorLE"
+EXPORTS
+    SKSEPlugin_Query=_SKSEPlugin_Query
+    SKSEPlugin_Load=_SKSEPlugin_Load

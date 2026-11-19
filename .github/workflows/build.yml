@@ -1,0 +1,51 @@
+name: Build Stick2Cursor LE
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: Get SKSE LE 1.7.3 sources
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $archive = Join-Path $env:GITHUB_WORKSPACE 'skse.7z'
+          Invoke-WebRequest 'https://skse.silverlock.org/beta/skse_1_07_03.7z' -OutFile $archive -UserAgent 'Mozilla/5.0'
+          & 'C:\Program Files\7-Zip\7z.exe' x $archive "-o$env:GITHUB_WORKSPACE\skse_src" -y | Out-Null
+          $root = $null
+          foreach ($header in Get-ChildItem "$env:GITHUB_WORKSPACE\skse_src" -Recurse -Filter IPrefix.h) {
+            $candidate = $header.Directory.Parent.FullName
+            if (Test-Path "$candidate\skse\skse\PluginAPI.h") { $root = $candidate; break }
+          }
+          if (-not $root) { throw 'Could not locate SKSE 1.7.3 source root.' }
+          "SKSE_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
+          $props = Join-Path $root 'config\_Plugins.props'
+          if (-not (Test-Path $props)) {
+            New-Item -ItemType Directory -Force (Split-Path $props) | Out-Null
+            Set-Content $props '<?xml version="1.0" encoding="utf-8"?><Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Project>'
+          }
+      - name: Build common_vc9
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $common = Join-Path $env:SKSE_ROOT 'src\common\common_vc9.vcxproj'
+          if (-not (Test-Path $common)) { $common = Join-Path $env:SKSE_ROOT 'src\common\common.vcxproj' }
+          msbuild $common /m /p:Configuration=Release /p:Platform=Win32
+          if ($LASTEXITCODE -ne 0) { throw 'common_vc9 build failed.' }
+      - name: Build plugin
+        shell: pwsh
+        run: |
+          msbuild src\Stick2CursorLE.vcxproj /m /p:Configuration=Release /p:Platform=Win32
+          if ($LASTEXITCODE -ne 0) { throw 'Stick2CursorLE build failed.' }
+      - name: Upload plugin and source package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stick2CursorLE-build
+          path: |
+            out/Stick2CursorLE.dll
+            dist/**
+            papyrus/src/**

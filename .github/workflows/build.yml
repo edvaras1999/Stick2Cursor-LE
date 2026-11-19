@@ -18,8 +18,8 @@ jobs:
           & 'C:\Program Files\7-Zip\7z.exe' x $archive "-o$env:GITHUB_WORKSPACE\skse_src" -y | Out-Null
           $root = $null
           foreach ($header in Get-ChildItem "$env:GITHUB_WORKSPACE\skse_src" -Recurse -Filter IPrefix.h) {
-            $candidate = $header.Directory.Parent.FullName
-            if (Test-Path "$candidate\skse\skse\PluginAPI.h") { $root = $candidate; break }
+            $candidate = $header.Directory.Parent.Parent.FullName
+            if (Test-Path "$candidate\src\skse\skse\PluginAPI.h") { $root = $candidate; break }
           }
           if (-not $root) { throw 'Could not locate SKSE 1.7.3 source root.' }
           "SKSE_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
